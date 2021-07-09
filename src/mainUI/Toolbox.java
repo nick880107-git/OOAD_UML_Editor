@@ -15,9 +15,6 @@ import javax.swing.JToggleButton;
 
 public class Toolbox extends JPanel {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7454868855353471216L;
 
 	private String[] toollist = { "select", "association line", "generalization line", "composition line", "class",
@@ -27,7 +24,7 @@ public class Toolbox extends JPanel {
 	private GridBagConstraints c;
 	private ButtonGroup group = new ButtonGroup();
 	private String state = "";
-
+	private String mode = "";
 	public Toolbox() {
 
 		toolbox = new GridBagLayout();
@@ -56,6 +53,7 @@ public class Toolbox extends JPanel {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						state = name.getText();
+						SetMode();
 					}
 				});
 				group.add(btn);
@@ -77,6 +75,29 @@ public class Toolbox extends JPanel {
 			this.add(name, c);
 
 		}
+	}
+	
+	private void SetMode() {
+		switch(state) {
+			case "select":
+				mode = "select";
+				break;
+			case "association line":
+			
+			case "generalization line":
+			case "composition line":
+			case "class":
+			case "use case":
+				mode = "createObject";
+				break;
+			default:
+				mode = "";
+				
+		}
+	}
+	
+	public String GetMode() {
+		return mode;
 	}
 
 }

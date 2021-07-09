@@ -8,16 +8,18 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import Factory.ObjectFactory;
 import UML.BasicObject;
 import UML.Composite;
+import UML.UMLobject;
 
 public class MenuBar extends JMenuBar {
-	/**
-	 * 
-	 */
+	Toolbox toolbox;
+	Canvas canvas;
 	private static final long serialVersionUID = 1225151121953385022L;
 
-	public MenuBar(Toolbox toolbox, Canvas canvas) {
+	public MenuBar(Canvas canvas, ObjectFactory of) {
+		this.canvas = canvas;
 		JMenu file = new JMenu("File");
 		JMenu edit = new JMenu("Edit");
 		JMenuItem group = new JMenuItem("Group");
@@ -26,20 +28,13 @@ public class MenuBar extends JMenuBar {
 		group.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ArrayList<BasicObject> objlist = new ArrayList<>();
-				for (BasicObject obj : canvas.GetBasiclist()) {
-					if (obj.GetSelected()) {
-						objlist.add(obj);
-					}
-				}
-				if (objlist.size() > 1) {
-					Composite comp = new Composite(objlist, canvas.GetDepth());
-					comp.SetSelected(true);
-					canvas.SelectInit();
-					canvas.AddCompsite(comp);
-					canvas.repaint();
-				}
-
+				UMLobject obj = of.factory("composite");
+				obj.SetSelected(true);
+				canvas.SelectInit();
+				canvas.AddUMLobject(obj);
+				canvas.repaint();
+				
+				
 			}
 		});
 
@@ -48,23 +43,14 @@ public class MenuBar extends JMenuBar {
 			public void actionPerformed(ActionEvent e) {
 				Composite target = null;
 				int checknum = 0;
-				for (BasicObject basicobj : canvas.GetBasiclist()) {
-					if (basicobj.GetSelected() && basicobj.GetCompositenum() == 0) {
-						return;
+				for (UMLobject obj : canvas.GetUMLlist()) {
+					if(obj.GetType() == "Composite" && obj.GetSelected()) {
+						target = (Composite)obj;
+						checknum++;
 					}
 				}
-
-				for (Composite comp : canvas.GetComplist()) {
-					if (comp.GetSelected()) {
-						checknum++;
-						target = comp;
-					}					
-				}
-				if (checknum == 1 && target != null) {
-					target.deleteProcedure();
-					canvas.DeleteComposite(target);
-					canvas.repaint();
-
+				if(checknum == 1) {
+					DeleteComposite(target);
 				}
 
 			}
@@ -72,9 +58,9 @@ public class MenuBar extends JMenuBar {
 		editname.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				BasicObject target = null;
+				UMLobject target = null;
 				int checknum = 0;
-				for (BasicObject obj : canvas.GetBasiclist()) {
+				for (UMLobject obj : canvas.GetUMLlist()) {
 					if (obj.GetSelected()) {
 						checknum++;
 						if (target == null) {
@@ -82,9 +68,9 @@ public class MenuBar extends JMenuBar {
 						}
 					}
 				}
-				if (checknum == 1 && target != null) {
+				if (checknum == 1 && target.GetType() == "BasicObject") {
 
-					Textapp textapp = new Textapp(target, canvas);
+					Textapp textapp = new Textapp((BasicObject)target, canvas);
 					textapp.frame.setLocationRelativeTo(null);
 				}
 			}
@@ -96,6 +82,15 @@ public class MenuBar extends JMenuBar {
 		this.add(file);
 		this.add(edit);
 
+	}	
+	
+	private void DeleteComposite(Composite comp) {
+		ArrayList<UMLobject> objlist = comp.GetBasiclist();
+		for(UMLobject obj:objlist) {
+			canvas.AddUMLobject(obj);
+		}
+		canvas.DelUMLobject(comp);
+		canvas.repaint();
 	}
 
 }

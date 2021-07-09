@@ -1,6 +1,10 @@
 package mainUI;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
+
+import Factory.ObjectFactory;
+import Listener.CanvasHandler;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
@@ -45,13 +49,20 @@ public class app {
 		
 		Toolbox toolbox = new Toolbox();
 		frame.getContentPane().add(toolbox, BorderLayout.WEST);
-		Canvas canvas = new Canvas(toolbox);
+		Canvas canvas = new Canvas();
 		frame.getContentPane().add(canvas, BorderLayout.CENTER);
 		
+		CanvasHandler ch = new CanvasHandler(canvas,toolbox);
+		canvas.SetHandler(ch);
 		
-		MenuBar menu = new MenuBar(toolbox,canvas);
+		ObjectFactory of = new ObjectFactory(ch);
+		
+		MenuBar menu = new MenuBar(canvas,of);
 		frame.getContentPane().add(menu, BorderLayout.NORTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		
+		
 		
 	}
 	
