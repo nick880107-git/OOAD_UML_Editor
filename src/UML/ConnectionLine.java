@@ -8,16 +8,15 @@ public abstract class ConnectionLine{
 	protected int depth;
 	protected double x2,y2;	
 	protected BasicObject a,b;
-	
+	protected int portnum_a,portnum_b;
 	protected double dy, dx, theta;
 	protected double phi;
 	protected int barb = 20;
-	public ConnectionLine(BasicObject a, BasicObject b) {
+	public ConnectionLine(BasicObject a, BasicObject b, double pre_x, double pre_y, double x, double y) {
 		this.a = a;
 		this.b = b;
 		SetDepth();
-		SetPort();		
-		
+		SetPort(pre_x, pre_y, x, y);	
 				
 	}
 	
@@ -26,26 +25,32 @@ public abstract class ConnectionLine{
 		depth = max_depth;
 	}
 	
-	public void SetPort() {
-		double mid_x = (a.x + b.x + b.w) / 2;
-		double mid_y = (a.y + b.y + b.h) / 2;
-		Point2D midpoint = new Point2D.Double(mid_x,mid_y);
-
-		double minL = 99999 , minR = 99999;
+	public void SetPort(double pre_x, double pre_y, double x, double y) {
+		Point2D pos_a = new Point2D.Double(pre_x,pre_y);
+		Point2D pos_b = new Point2D.Double(x,y);
+		double minL = 99999;
+		double minR = 99999;
 		for(int i = 0 ; i < 4 ; i++) {
-			if(midpoint.distance(a.point[i].getCenterX(), a.point[i].getCenterY()) < minL) {
-				minL = midpoint.distance(a.point[i].getCenterX(), a.point[i].getCenterY());
-				x = a.point[i].getCenterX();
-				y = a.point[i].getCenterY();
+			
+			if(pos_a.distance(a.point[i].getCenterX(), a.point[i].getCenterY()) < minL) {
+				minL = pos_a.distance(a.point[i].getCenterX(), a.point[i].getCenterY());
+				this.x = a.point[i].getCenterX();
+				this.y = a.point[i].getCenterY();
+				portnum_a = i;
 			}
-			if(midpoint.distance(b.point[i].getCenterX(), b.point[i].getCenterY()) < minR) {
-				minR = midpoint.distance(b.point[i].getCenterX(), b.point[i].getCenterY());
+			
+			if(pos_b.distance(b.point[i].getCenterX(), b.point[i].getCenterY()) < minR) {
+				minR = pos_b.distance(b.point[i].getCenterX(), b.point[i].getCenterY());
 				x2 = b.point[i].getCenterX();
 				y2 = b.point[i].getCenterY();
+				portnum_b = i;
 			}
+			
 		}
-		dy = y2 - y;
-		dx = x2 - x;
+		
+		
+		dy = y2 - this.y;
+		dx = x2 - this.x;
 		theta = Math.atan2(dy, dx);
 	}
 	
@@ -56,6 +61,18 @@ public abstract class ConnectionLine{
 		else {
 			return false;
 		}
+	}
+	
+	public void Move() {
+		Point2D pos_a = a.GetPoint(portnum_a);
+		Point2D pos_b = b.GetPoint(portnum_b);
+		x = pos_a.getX();
+		y = pos_a.getY();
+		x2 = pos_b.getX();
+		y2 = pos_b.getY();
+		dy = y2 - y;
+		dx = x2 - x;
+		theta = Math.atan2(dy, dx);
 	}
 	
 	public abstract void draw(Graphics2D g); 

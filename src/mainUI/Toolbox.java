@@ -3,11 +3,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -47,9 +47,9 @@ public class Toolbox extends JPanel {
 			JToggleButton btn = new JToggleButton();
 			JTextField name = new JTextField(toollist[i]);
 			try {
-				String img_name = "D:\\Java_workspace\\FirstProject\\resources\\" + toollist[i] + ".png";
-				Icon img = new ImageIcon(img_name);
-				btn.setIcon(img);
+				String img_name = "/" + toollist[i] + ".png";
+				Image img = new ImageIcon(this.getClass().getResource(img_name)).getImage();
+				btn.setIcon(new ImageIcon(img));
 				btn.setMargin(new Insets(0, 0, 0, 0));
 				btn.setBackground(Color.WHITE);
 				btn.addActionListener(new ActionListener() {

@@ -1,8 +1,8 @@
 package mainUI;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -10,7 +10,6 @@ import javax.swing.JMenuItem;
 
 import UML.BasicObject;
 import UML.Composite;
-import UML.CompositeComparator;
 
 public class MenuBar extends JMenuBar {
 	/**
@@ -34,12 +33,11 @@ public class MenuBar extends JMenuBar {
 					}
 				}
 				if (objlist.size() > 1) {
-					Composite comp = new Composite(objlist,canvas.GetDepth());
+					Composite comp = new Composite(objlist, canvas.GetDepth());
 					comp.SetSelected(true);
 					canvas.SelectInit();
 					canvas.AddCompsite(comp);
 					canvas.repaint();
-					System.out.println("group, composite num = "+canvas.GetComplist().size());
 				}
 
 			}
@@ -50,23 +48,24 @@ public class MenuBar extends JMenuBar {
 			public void actionPerformed(ActionEvent e) {
 				Composite target = null;
 				int checknum = 0;
-				Collections.sort(canvas.GetComplist(), new CompositeComparator());
+				for (BasicObject basicobj : canvas.GetBasiclist()) {
+					if (basicobj.GetSelected() && basicobj.GetCompositenum() == 0) {
+						return;
+					}
+				}
+
 				for (Composite comp : canvas.GetComplist()) {
 					if (comp.GetSelected()) {
 						checknum++;
-					}
-					if (target == null) {
 						target = comp;
-					}
+					}					
 				}
 				if (checknum == 1 && target != null) {
 					target.deleteProcedure();
 					canvas.DeleteComposite(target);
 					canvas.repaint();
-					System.out.println("ungroup, composite num = "+canvas.GetComplist().size());
 
 				}
-				
 
 			}
 		});

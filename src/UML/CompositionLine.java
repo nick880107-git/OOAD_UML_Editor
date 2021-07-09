@@ -8,8 +8,8 @@ import java.awt.geom.Path2D;
 public class CompositionLine extends ConnectionLine{
 	
 	protected double phi = Math.toRadians(45);
-	public CompositionLine(BasicObject a, BasicObject b) {
-		super(a, b);
+	public CompositionLine(BasicObject a, BasicObject b, double pre_x, double pre_y, double x, double y) {
+		super(a, b,pre_x, pre_y,x, y);
 	}
 	
 public void draw(Graphics2D g) {

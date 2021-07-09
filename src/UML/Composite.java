@@ -50,6 +50,7 @@ public class Composite{
 	public void deleteProcedure() {
 		for (BasicObject obj : basiclist) {
 			obj.MinusCompositenum();
+			obj.SetSelected(false);
 		}
 	}
 	

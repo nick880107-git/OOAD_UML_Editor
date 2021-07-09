@@ -2,7 +2,9 @@ package UML;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
 
 public abstract class BasicObject{
 	protected Rectangle2D[] point = new Rectangle2D[4];
@@ -27,6 +29,11 @@ public abstract class BasicObject{
 		point[2] = new Rectangle2D.Double(x+w/2-3,y+h-3,6,6);
 		point[3] = new Rectangle2D.Double(x-3,y+h/2-3,6,6);
 		
+	}
+	
+	public Point2D GetPoint(int index) {
+		Point2D p = new Point2D.Double(point[index].getCenterX(),point[index].getCenterY());
+		return p;
 	}
 	
 	public void Move(double x,double y) {

@@ -8,15 +8,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Collections;
-
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
-
 import UML.AssociationLine;
 import UML.BasicObject;
 import UML.Composite;
-import UML.CompositeComparator;
 import UML.CompositionLine;
 import UML.ConnectionLine;
 import UML.GeneralizationLine;
@@ -126,39 +122,28 @@ public class Canvas extends JPanel {
 				}
 
 			} else if (state.equals("select")) {
-				boolean isfirst = true;
-
 				SelectInit();
 				for (BasicObject obj : Basiclist) {
 					if (obj.contains(x, y)) {
-						if (isfirst) {
-							target = obj;
-							isfirst = false;
-						} else if (obj.GetDepth() > target.GetDepth()) {
-							target = obj;
-						}
+						target = obj;
 					}
 				}
 				if (target != null) {
 					target.SetSelected(true);
 					if (target.GetCompositenum() > 0) {
-						boolean isfirst_c = true;
 						Composite target_c = null;
 						for (Composite composite : Complist) {
 							if (composite.GetBasiclist().contains(target)) {
-								if (isfirst_c) {
-									target_c = composite;
-									isfirst_c = false;
-								} else if (composite.GetDepth() > target_c.GetDepth()) {
-									target_c = composite;
-								}
-							}
+								target_c = composite;
+							}							
 						}
 						if (target_c != null) {
 							target_c.SetSelected(true);
+							target_c.SetBasicSelect(true);
 						}
 					}
 				}
+				System.out.println("click:"+target);
 			}
 			repaint();
 		}
@@ -173,6 +158,7 @@ public class Canvas extends JPanel {
 				if (obj.contains(pre_x, pre_y)) {
 					target = obj;
 					findtarget = true;
+					System.out.println("press:"+target);
 
 				}
 			}
@@ -203,10 +189,10 @@ public class Canvas extends JPanel {
 						}
 					}
 					ArrayList<Composite> comp_to_select = new ArrayList<Composite>();
-					Collections.sort(Complist, new CompositeComparator());
-					for (Composite comp : Complist) {
-
+					
+					for(int i = Complist.size()-1 ; i >= 0 ; i--) {
 						boolean hasSelect = true;
+						Composite comp = Complist.get(i);
 						for (BasicObject obj : comp.GetBasiclist()) {
 							if (!obj.GetSelected()) {
 								hasSelect = false;
@@ -215,29 +201,31 @@ public class Canvas extends JPanel {
 						}
 						if (hasSelect) {
 							comp_to_select.add(comp);
-						} else {
+							
+						}else {
 							comp.SetBasicSelect(false);
+							
 						}
 					}
 
-					Collections.sort(comp_to_select, new CompositeComparator());
 					for (Composite comp : comp_to_select) {
 						comp.SetBasicSelect(false);
 					}
 
-					for (Composite comp : comp_to_select) {
+					for(Composite comp: comp_to_select) {
 						boolean hasSelect = false;
-						for (BasicObject obj : comp.GetBasiclist()) {
-							if (obj.GetSelected()) {
+						for(BasicObject obj : comp.GetBasiclist()) {
+							if(obj.GetSelected()) {
 								hasSelect = true;
 								break;
 							}
 						}
-						if (!hasSelect) {
-							comp.SetSelected(true);
+						if(!hasSelect) {
 							comp.SetBasicSelect(true);
+							comp.SetSelected(true);
 						}
 					}
+					
 				}
 
 				// ©ì¦²¼Ò¦¡
@@ -246,12 +234,10 @@ public class Canvas extends JPanel {
 					distance_x = x - pre_x;
 					distance_y = y - pre_y;
 					if (target.GetCompositenum() > 0) {
-						Collections.sort(Complist, new CompositeComparator());
 						Composite target_c = null;
 						for (Composite comp : Complist) {
 							if (comp.GetBasiclist().contains(target)) {
 								target_c = comp;
-								break;
 							}
 						}
 						if (target_c != null) {
@@ -259,7 +245,7 @@ public class Canvas extends JPanel {
 							for (ConnectionLine line : Linelist) {
 								for (BasicObject obj : target_c.GetBasiclist()) {
 									if (line.contains(obj)) {
-										line.SetPort();
+										line.Move();
 									}
 								}
 							}
@@ -268,7 +254,7 @@ public class Canvas extends JPanel {
 						target.Move(distance_x, distance_y);
 						for (ConnectionLine line : Linelist) {
 							if (line.contains(target)) {
-								line.SetPort();
+								line.Move();
 							}
 						}
 					}
@@ -278,24 +264,24 @@ public class Canvas extends JPanel {
 			} else {
 				BasicObject a = null, b = null;
 				for (BasicObject obj : Basiclist) {
-					if (a == null && obj.contains(pre_x, pre_y)) {
+					if (a == null && obj.contains(pre_x, pre_y) && obj.GetCompositenum() == 0) {
 						a = obj;
 					}
-					if (b == null && obj.contains(x, y)) {
+					if (b == null && obj.contains(x, y) && obj.GetCompositenum() == 0) {
 						b = obj;
 					}
 				}
-				if (a != null && b != null) {
+				if (a != null && b != null && a != b) {
 					ConnectionLine line = null;
 					switch (state) {
 					case "association line":
-						line = new AssociationLine(a, b);
+						line = new AssociationLine(a, b,pre_x, pre_y,x, y);
 						break;
 					case "generalization line":
-						line = new GeneralizationLine(a, b);
+						line = new GeneralizationLine(a, b,pre_x, pre_y,x, y);
 						break;
 					case "composition line":
-						line = new CompositionLine(a, b);
+						line = new CompositionLine(a, b,pre_x, pre_y,x, y);
 						break;
 
 					}

@@ -6,8 +6,8 @@ import java.awt.geom.Line2D;
 public class AssociationLine extends ConnectionLine{
 
 	protected double phi = Math.toRadians(40);
-	public AssociationLine(BasicObject a, BasicObject b) {
-		super(a, b);		
+	public AssociationLine(BasicObject a, BasicObject b, double pre_x, double pre_y, double x, double y) {
+		super(a, b,pre_x, pre_y,x, y);		
 	}
 	
 	public void draw(Graphics2D g) {
